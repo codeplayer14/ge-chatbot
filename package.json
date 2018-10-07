@@ -17,6 +17,7 @@
     "mongoose": "^4.0.3",
     "node-telegram-bot-api": "^0.30.0",
     "unirest": "^0.5.1",
+    "uuid": "^3.3.2",
     "validator": "^10.8.0"
   }
 }

@@ -1,22 +1,36 @@
 const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
-
+const technician = require("./technician");
 const serviceScehma = new Schema({
-  applianceType: {
+  serviceNo: {
     type: String,
     required: true
   },
-  serialNo: {
+  technician: {
+    type: mongoose.Schema.Types.technician,
+    ref: "technician"
+  },
+  slot: {
     type: String,
     required: true
   },
-  modelNo: {
+  customer: {
     type: String,
     required: true
+  },
+  address: {
+    type: String,
+    required: true
+  },
+  contact: {
+    type: String
+  },
+  email: {
+    type: String
   }
 });
 
-const applianceModel = mongoose.model("appliance", applianceSchema);
+const serviceModel = mongoose.model("service", serviceScehma);
 
-module.exports = applianceModel;
+module.exports = serviceModel;

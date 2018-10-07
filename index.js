@@ -6,10 +6,12 @@ const http = require("http");
 const config = require("./API_KEY");
 const mongoose = require("mongoose");
 const server = express();
+const uuidv1 = require("uuid/v1");
 const responses = require("./responses");
-const service = require("./models/service");
+
 const appliance = require("./models/appliance");
 const technician = require("./models/technician");
+const Service = require("./models/service");
 const userDetails = {};
 const user = config.user;
 const password = config.password;
@@ -55,7 +57,7 @@ server.post("/ge-webhook", (request, response) => {
   if (intentName === "Name") {
     const fullName = queryResult.parameters.fullName[0].split(" ");
     userDetails.sessionId.firstName = fullName[0];
-    userDetails.sessionId.secondName = fullName[1];
+    userDetails.sessionId.lastName = fullName[1];
   }
 
   if (intentName === "Email") {
@@ -94,7 +96,7 @@ server.post("/ge-webhook", (request, response) => {
           technicians.forEach(technician => {
             technician.slots.forEach(slot => {
               if (slot.slotCount > 0) {
-                availableSlots.push(slot);
+                availableSlots.push({ slot: technician._id });
               }
             });
           });
@@ -107,6 +109,23 @@ server.post("/ge-webhook", (request, response) => {
   }
 
   if (intentName === "SlotPick") {
+    const selectedSlot = queryText.split("$")[0];
+    const technicianPicked = queryText.split("$")[1];
+    const serviceNo = uuidv1();
+    const service = new Service({
+      serviceNo: serviceNo,
+      technician: technician.findById(technicianPicked),
+      slot: selectedSlot,
+      customer:
+        userDetails.sessionId.firstName + userDetails.sessionId.lastName,
+      address: userDetails.sessionId.address,
+      contact: userDetails.sessionId.contact,
+      email: userDetails.sessionId.email
+    });
+
+    serice.save().then(() => {
+      response.send(responses.confirmResponse([serviceNo]));
+    });
   }
 });
 

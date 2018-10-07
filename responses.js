@@ -1,10 +1,12 @@
 const getSlots = slots => {
   slotArray = [];
+
   slots.forEach(slot => {
+    const key = Object.keys(slot)[0];
     slotsArray.push([
       {
-        text: slot.slot,
-        callback_data: slot.slot
+        text: key,
+        callback_data: key + "$" + slot.key
       }
     ]);
   });
@@ -67,6 +69,14 @@ module.exports = {
         reply_markup: {
           inline_keyboard: getSlots(slots)
         }
+      }
+    };
+  },
+
+  confirmResponse: tracking_id => {
+    return {
+      telegram: {
+        text: `Service was scheduled. Your unique tracking id is ${tracking_id}.`
       }
     };
   }
